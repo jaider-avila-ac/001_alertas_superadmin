@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* nada redondeado, ni lo que ponen los navegadores por defecto (safari en iphone, selects) */
+  input,
+  select,
+  textarea,
+  button {
+    border-radius: 0;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold
+      transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-primario {
+    @apply btn bg-primario-500 text-white shadow-sm hover:bg-primario-600;
+  }
+
+  .btn-secundario {
+    @apply btn border border-borde bg-superficie text-texto hover:bg-fondo;
+  }
+
+  .btn-peligro {
+    @apply btn bg-peligro-600 text-white hover:bg-peligro-700;
+  }
+
+  .btn-exito {
+    @apply btn bg-exito-600 text-white hover:bg-exito-700;
+  }
+
+  .input {
+    @apply w-full border border-borde bg-fondo px-4 py-3 text-sm text-texto
+      placeholder:text-suave focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primario-500;
+  }
+
+  .etiqueta {
+    @apply mb-1.5 block text-sm font-semibold text-texto;
+  }
+
+  .tarjeta {
+    @apply border border-borde bg-superficie p-4 shadow-sm sm:p-6;
+  }
+
+  /* encabezado de tablas en rosado, como en el sistema anterior */
+  .tabla-encabezado {
+    @apply bg-primario-500 text-white;
+  }
+}
