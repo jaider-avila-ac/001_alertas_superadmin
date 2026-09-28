@@ -12,8 +12,8 @@ export default function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
           <Route path="/instituciones" element={<InstitucionesPage />} />
-          <Route path="/instituciones/nueva" element={<CrearInstitucionPage />} />
-          <Route path="/instituciones/:id" element={<InstitucionDetallePage />} />
+          <Route path="/nueva-institucion" element={<CrearInstitucionPage />} />
+          <Route path="/instituciones/:slug" element={<InstitucionDetallePage />} />
           <Route path="/contrasena" element={<CambiarContrasenaPage />} />
         </Route>
       </Route>

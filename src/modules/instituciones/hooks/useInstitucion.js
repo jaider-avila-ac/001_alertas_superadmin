@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { buscarInstitucion, listarAdministradores } from '../../../services/institucionService'
 
 // detalle de una institucion con sus administradores
-export default function useInstitucion(id) {
+export default function useInstitucion(slug) {
   const [institucion, setInstitucion] = useState(null)
   const [administradores, setAdministradores] = useState([])
   const [cargando, setCargando] = useState(true)
@@ -12,15 +12,15 @@ export default function useInstitucion(id) {
     setCargando(true)
     setError('')
     try {
-      const datos = await buscarInstitucion(id)
-      const admins = await listarAdministradores(id)
+      const datos = await buscarInstitucion(slug)
+      const admins = await listarAdministradores(slug)
       setInstitucion(datos)
       setAdministradores(admins)
     } catch (err) {
       setError(err.message)
     }
     setCargando(false)
-  }, [id])
+  }, [slug])
 
   useEffect(() => {
     cargar()
@@ -30,7 +30,7 @@ export default function useInstitucion(id) {
   function reemplazarAdministrador(actualizado) {
     const lista = []
     for (const admin of administradores) {
-      if (admin.usuarioId === actualizado.usuarioId) {
+      if (admin.codigo === actualizado.codigo) {
         lista.push(actualizado)
       } else {
         lista.push(admin)

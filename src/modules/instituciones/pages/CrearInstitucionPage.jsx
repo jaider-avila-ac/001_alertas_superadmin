@@ -74,7 +74,7 @@ export default function CrearInstitucionPage() {
           </div>
 
           <div className="flex flex-col gap-2 sm:flex-row">
-            <Link to={'/instituciones/' + creada.institucion.id} className="btn-primario">
+            <Link to={'/instituciones/' + creada.institucion.slug} className="btn-primario">
               Ver institucion
             </Link>
             <Link to="/instituciones" className="btn-secundario">

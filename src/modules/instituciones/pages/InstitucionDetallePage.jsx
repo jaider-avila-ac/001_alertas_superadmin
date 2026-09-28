@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, MessageSquare, Pencil, Power } from 'lucide-react'
 import BotonCopiar from '../../../components/ui/BotonCopiar'
 import Cargando from '../../../components/ui/Cargando'
@@ -38,8 +38,9 @@ function Dato({ etiqueta, valor }) {
 }
 
 export default function InstitucionDetallePage() {
-  const { id } = useParams()
-  const detalle = useInstitucion(id)
+  const { slug } = useParams()
+  const navigate = useNavigate()
+  const detalle = useInstitucion(slug)
 
   const [editando, setEditando] = useState(false)
   const [formulario, setFormulario] = useState(null)
@@ -85,10 +86,14 @@ export default function InstitucionDetallePage() {
     setErrorEdicion('')
     setGuardando(true)
     try {
-      const actualizada = await actualizarInstitucion(id, vaciosANull(formulario))
+      const actualizada = await actualizarInstitucion(slug, vaciosANull(formulario))
       detalle.setInstitucion(actualizada)
       setEditando(false)
       setMensaje('Datos actualizados')
+      // si cambio el enlace, la url del panel tambien cambia
+      if (actualizada.slug !== slug) {
+        navigate('/instituciones/' + actualizada.slug, { replace: true })
+      }
     } catch (err) {
       setErrorEdicion(err.message)
     }
@@ -96,7 +101,7 @@ export default function InstitucionDetallePage() {
   }
 
   async function inactivar(motivo) {
-    const actualizada = await inactivarInstitucion(id, motivo)
+    const actualizada = await inactivarInstitucion(slug, motivo)
     detalle.setInstitucion(actualizada)
     setModalInactivar(false)
     setMensaje('Institucion inhabilitada. Nadie de ella puede entrar.')
@@ -107,7 +112,7 @@ export default function InstitucionDetallePage() {
     setError('')
     setOcupado(true)
     try {
-      const actualizada = await activarInstitucion(id)
+      const actualizada = await activarInstitucion(slug)
       detalle.setInstitucion(actualizada)
       setMensaje('Institucion habilitada de nuevo')
     } catch (err) {
@@ -121,7 +126,7 @@ export default function InstitucionDetallePage() {
     setError('')
     setOcupado(true)
     try {
-      const actualizada = await cambiarSms(id, !institucion.smsActivo)
+      const actualizada = await cambiarSms(slug, !institucion.smsActivo)
       detalle.setInstitucion(actualizada)
     } catch (err) {
       setError(err.message)
@@ -253,7 +258,7 @@ export default function InstitucionDetallePage() {
       </div>
 
       <AdministradoresSeccion
-        institucionId={id}
+        slug={slug}
         administradores={detalle.administradores}
         alCambiar={detalle.reemplazarAdministrador}
         alAgregar={detalle.agregarAdministrador}

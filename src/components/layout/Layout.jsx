@@ -14,7 +14,7 @@ function esEscritorio() {
 }
 
 function tituloDe(ruta) {
-  if (ruta === '/instituciones/nueva') {
+  if (ruta === '/nueva-institucion') {
     return 'Nueva institucion'
   }
   if (ruta.startsWith('/instituciones/')) {

@@ -2,6 +2,7 @@ import { api, nuevaLlave } from './api'
 
 const BASE = '/api/v1/superadmin/instituciones'
 
+// la institucion va por su slug y el administrador por su codigo (nunca ids)
 export function listarInstituciones(filtros) {
   const params = new URLSearchParams()
 
@@ -20,8 +21,8 @@ export function listarInstituciones(filtros) {
   return api.get(BASE + '?' + params.toString())
 }
 
-export function buscarInstitucion(id) {
-  return api.get(BASE + '/' + id)
+export function buscarInstitucion(slug) {
+  return api.get(BASE + '/' + slug)
 }
 
 // llave: se genera una vez por formulario, asi el doble clic no crea dos instituciones
@@ -29,39 +30,39 @@ export function crearInstitucion(datos, llave) {
   return api.post(BASE, datos, { llave: llave || nuevaLlave() })
 }
 
-export function actualizarInstitucion(id, datos) {
-  return api.put(BASE + '/' + id, datos)
+export function actualizarInstitucion(slug, datos) {
+  return api.put(BASE + '/' + slug, datos)
 }
 
-export function inactivarInstitucion(id, motivo) {
-  return api.patch(BASE + '/' + id + '/inactivar', { motivo: motivo })
+export function inactivarInstitucion(slug, motivo) {
+  return api.patch(BASE + '/' + slug + '/inactivar', { motivo: motivo })
 }
 
-export function activarInstitucion(id) {
-  return api.patch(BASE + '/' + id + '/activar')
+export function activarInstitucion(slug) {
+  return api.patch(BASE + '/' + slug + '/activar')
 }
 
-export function cambiarSms(id, activo) {
-  return api.patch(BASE + '/' + id + '/sms', { activo: activo })
+export function cambiarSms(slug, activo) {
+  return api.patch(BASE + '/' + slug + '/sms', { activo: activo })
 }
 
-export function listarAdministradores(id) {
-  return api.get(BASE + '/' + id + '/administradores')
+export function listarAdministradores(slug) {
+  return api.get(BASE + '/' + slug + '/administradores')
 }
 
-export function crearAdministrador(id, datos, llave) {
-  return api.post(BASE + '/' + id + '/administradores', datos, { llave: llave || nuevaLlave() })
+export function crearAdministrador(slug, datos, llave) {
+  return api.post(BASE + '/' + slug + '/administradores', datos, { llave: llave || nuevaLlave() })
 }
 
-export function restablecerContrasenaAdministrador(id, usuarioId) {
-  return api.post(BASE + '/' + id + '/administradores/' + usuarioId + '/restablecer-contrasena')
+export function restablecerContrasenaAdministrador(slug, codigo) {
+  return api.post(BASE + '/' + slug + '/administradores/' + codigo + '/restablecer-contrasena')
 }
 
 // el admin no puede cambiar su propia contrasena, se la pone el superadmin
-export function asignarContrasenaAdministrador(id, usuarioId, nueva) {
-  return api.put(BASE + '/' + id + '/administradores/' + usuarioId + '/contrasena', { nueva: nueva })
+export function asignarContrasenaAdministrador(slug, codigo, nueva) {
+  return api.put(BASE + '/' + slug + '/administradores/' + codigo + '/contrasena', { nueva: nueva })
 }
 
-export function cambiarEstadoAdministrador(id, usuarioId, activo) {
-  return api.patch(BASE + '/' + id + '/administradores/' + usuarioId + '/estado', { activo: activo })
+export function cambiarEstadoAdministrador(slug, codigo, activo) {
+  return api.patch(BASE + '/' + slug + '/administradores/' + codigo + '/estado', { activo: activo })
 }

@@ -26,8 +26,8 @@ export default function InstitucionesLista({ instituciones }) {
       {/* celular: tarjetas */}
       <ul className="space-y-3 md:hidden">
         {instituciones.map((institucion) => (
-          <li key={institucion.id}>
-            <Link to={'/instituciones/' + institucion.id} className="tarjeta flex items-center justify-between gap-3 p-4">
+          <li key={institucion.slug}>
+            <Link to={'/instituciones/' + institucion.slug} className="tarjeta flex items-center justify-between gap-3 p-4">
               <div className="min-w-0">
                 <p className="truncate font-medium">{institucion.nombre}</p>
                 <p className="truncate text-sm text-suave">/{institucion.slug}</p>
@@ -55,7 +55,7 @@ export default function InstitucionesLista({ instituciones }) {
           </thead>
           <tbody>
             {instituciones.map((institucion) => (
-              <tr key={institucion.id} className="border-t border-borde transition-colors hover:bg-primario-50">
+              <tr key={institucion.slug} className="border-t border-borde transition-colors hover:bg-primario-50">
                 <td className="px-4 py-3 font-medium">{institucion.nombre}</td>
                 <td className="px-4 py-3 text-suave">/{institucion.slug}</td>
                 <td className="px-4 py-3 text-suave">
@@ -70,7 +70,7 @@ export default function InstitucionesLista({ instituciones }) {
                   <EstadoInsignia activa={institucion.activa} />
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <Link to={'/instituciones/' + institucion.id} className="font-semibold text-primario-500 hover:text-primario-600">
+                  <Link to={'/instituciones/' + institucion.slug} className="font-semibold text-primario-500 hover:text-primario-600">
                     Ver
                   </Link>
                 </td>

@@ -14,7 +14,7 @@ import {
 import { formatearFecha, vaciosANull } from '../../../utils/texto'
 import DatosAdministradorCampos, { ADMINISTRADOR_VACIO } from './DatosAdministradorCampos'
 
-export default function AdministradoresSeccion({ institucionId, administradores, alCambiar, alAgregar }) {
+export default function AdministradoresSeccion({ slug, administradores, alCambiar, alAgregar }) {
   const [mensaje, setMensaje] = useState('')
   const [error, setError] = useState('')
   const [ocupado, setOcupado] = useState(null)
@@ -39,9 +39,9 @@ export default function AdministradoresSeccion({ institucionId, administradores,
     }
     setMensaje('')
     setError('')
-    setOcupado(admin.usuarioId)
+    setOcupado(admin.codigo)
     try {
-      const actualizado = await restablecerContrasenaAdministrador(institucionId, admin.usuarioId)
+      const actualizado = await restablecerContrasenaAdministrador(slug, admin.codigo)
       alCambiar(actualizado)
       setMensaje('Contrasena restablecida. Ahora es el numero de documento: ' + admin.nroDoc)
     } catch (err) {
@@ -57,9 +57,9 @@ export default function AdministradoresSeccion({ institucionId, administradores,
     }
     setMensaje('')
     setError('')
-    setOcupado(admin.usuarioId)
+    setOcupado(admin.codigo)
     try {
-      const actualizado = await cambiarEstadoAdministrador(institucionId, admin.usuarioId, activar)
+      const actualizado = await cambiarEstadoAdministrador(slug, admin.codigo, activar)
       alCambiar(actualizado)
     } catch (err) {
       setError(err.message)
@@ -78,7 +78,7 @@ export default function AdministradoresSeccion({ institucionId, administradores,
     setErrorClave('')
     setGuardando(true)
     try {
-      const actualizado = await asignarContrasenaAdministrador(institucionId, adminClave.usuarioId, claveNueva)
+      const actualizado = await asignarContrasenaAdministrador(slug, adminClave.codigo, claveNueva)
       alCambiar(actualizado)
       setMensaje('Contrasena asignada a ' + adminClave.nombres + '. Se cerraron sus sesiones abiertas.')
       setAdminClave(null)
@@ -100,7 +100,7 @@ export default function AdministradoresSeccion({ institucionId, administradores,
     setErrorModal('')
     setGuardando(true)
     try {
-      const creado = await crearAdministrador(institucionId, vaciosANull(nuevo), llave)
+      const creado = await crearAdministrador(slug, vaciosANull(nuevo), llave)
       alAgregar(creado)
       setModalAbierto(false)
       setMensaje('Administrador creado. Usuario y contrasena inicial: ' + creado.nroDoc)
@@ -129,7 +129,7 @@ export default function AdministradoresSeccion({ institucionId, administradores,
 
       <ul className="divide-y divide-borde">
         {administradores.map((admin) => (
-          <li key={admin.usuarioId} className="flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between">
+          <li key={admin.codigo} className="flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               <p className="font-medium">
                 {admin.nombres} {admin.apellidos}
@@ -145,15 +145,15 @@ export default function AdministradoresSeccion({ institucionId, administradores,
               </div>
             </div>
             <div className="flex shrink-0 flex-wrap gap-2">
-              <button className="btn-secundario" disabled={ocupado === admin.usuarioId} onClick={() => abrirAsignar(admin)}>
+              <button className="btn-secundario" disabled={ocupado === admin.codigo} onClick={() => abrirAsignar(admin)}>
                 <LockKeyhole size={16} />
                 Asignar contrasena
               </button>
-              <button className="btn-secundario" disabled={ocupado === admin.usuarioId} onClick={() => restablecer(admin)}>
+              <button className="btn-secundario" disabled={ocupado === admin.codigo} onClick={() => restablecer(admin)}>
                 <KeyRound size={16} />
                 Restablecer
               </button>
-              <button className="btn-secundario" disabled={ocupado === admin.usuarioId} onClick={() => cambiarEstado(admin)}>
+              <button className="btn-secundario" disabled={ocupado === admin.codigo} onClick={() => cambiarEstado(admin)}>
                 <Power size={16} />
                 {admin.activo ? 'Inactivar' : 'Activar'}
               </button>
