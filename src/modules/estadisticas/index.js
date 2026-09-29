@@ -1,1 +1,0 @@
-export { default as EstadisticasPage } from './pages/EstadisticasPage'

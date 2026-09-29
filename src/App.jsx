@@ -1,9 +1,13 @@
+import { lazy, Suspense } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import Layout from './components/layout/Layout'
 import { CambiarContrasenaPage, LoginPage } from './modules/auth'
-import { EstadisticasPage } from './modules/estadisticas'
+import Cargando from './components/ui/Cargando'
 import { CrearInstitucionPage, InstitucionDetallePage, InstitucionesPage } from './modules/instituciones'
+
+// los graficos (chart.js) solo se descargan al abrir estadisticas
+const EstadisticasPage = lazy(() => import('./modules/estadisticas/pages/EstadisticasPage'))
 
 export default function App() {
   return (
@@ -15,7 +19,14 @@ export default function App() {
           <Route path="/instituciones" element={<InstitucionesPage />} />
           <Route path="/nueva-institucion" element={<CrearInstitucionPage />} />
           <Route path="/instituciones/:slug" element={<InstitucionDetallePage />} />
-          <Route path="/estadisticas" element={<EstadisticasPage />} />
+          <Route
+            path="/estadisticas"
+            element={
+              <Suspense fallback={<Cargando />}>
+                <EstadisticasPage />
+              </Suspense>
+            }
+          />
           <Route path="/contrasena" element={<CambiarContrasenaPage />} />
         </Route>
       </Route>

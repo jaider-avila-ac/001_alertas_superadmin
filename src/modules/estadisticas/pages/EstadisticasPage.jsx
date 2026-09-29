@@ -1,22 +1,29 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { X } from 'lucide-react'
+import { BellRing, Building2, MessageSquare, Receipt, X } from 'lucide-react'
 import Cargando from '../../../components/ui/Cargando'
 import Insignia from '../../../components/ui/Insignia'
 import Mensaje from '../../../components/ui/Mensaje'
 import Paginacion from '../../../components/ui/Paginacion'
 import { verComparativo, verEstadisticas } from '../../../services/estadisticaService'
-import Barras from '../components/Barras'
-import ColumnasPorMes from '../components/ColumnasPorMes'
+import BarrasApiladas from '../../../components/graficos/BarrasApiladas'
+import BarrasHorizontales from '../../../components/graficos/BarrasHorizontales'
+import Columnas from '../../../components/graficos/Columnas'
+import Indicador from '../../../components/graficos/Indicador'
+import Linea from '../../../components/graficos/Linea'
+import Dona from '../../../components/graficos/Dona'
+import TarjetaGrafico from '../../../components/graficos/TarjetaGrafico'
+import {
+  CIELO,
+  ESMERALDA,
+  ESTADOS,
+  INDIGO,
+  ROSADO,
+  coloresPorNombre,
+  textoPorcentaje,
+} from '../../../components/graficos/configuracion'
 
-function Indicador({ titulo, valor, detalle }) {
-  return (
-    <div className="tarjeta">
-      <p className="text-xs font-medium text-suave">{titulo}</p>
-      <p className="mt-1 text-2xl font-bold tabular-nums text-texto">{valor}</p>
-      {detalle && <p className="mt-1 text-xs text-suave">{detalle}</p>}
-    </div>
-  )
-}
+// color fijo por rol (no por puesto): no cambia con los filtros
+const COLOR_ROL = { ADMIN: CIELO, PSICORIENTADOR: ROSADO, DOCENTE: INDIGO, ESTUDIANTE: ESMERALDA }
 
 // alertas por cada 100 estudiantes activos, para comparar colegios de distinto tamanio
 function porCien(alertas, estudiantes) {
@@ -25,6 +32,17 @@ function porCien(alertas, estudiantes) {
   }
   const valor = Math.round((alertas / estudiantes) * 1000) / 10
   return String(valor).replace('.', ',')
+}
+
+// solo los colegios con alertas, con sus tres estados
+function filasComparativo(contenido) {
+  const filas = []
+  for (const fila of contenido) {
+    if (fila.alertas > 0) {
+      filas.push({ etiqueta: fila.nombre, valores: [fila.pendientes, fila.enProceso, fila.completadas] })
+    }
+  }
+  return filas
 }
 
 // estadisticas entre colegios: solo totales, nunca nombres de estudiantes ni lo que dicen las alertas
@@ -92,22 +110,62 @@ export default function EstadisticasPage() {
   let cuerpo = null
   if (datos) {
     const r = datos.resumen
+
+    const roles = []
+    for (const rol of datos.usuariosPorRol) {
+      roles.push({ ...rol, color: COLOR_ROL[rol.clave] })
+    }
+
+    const nombresCategorias = []
+    for (const categoria of datos.porCategoria) {
+      nombresCategorias.push(categoria.clave)
+    }
+    const colorCategoria = coloresPorNombre(nombresCategorias)
+    const categorias = []
+    for (const categoria of datos.porCategoria) {
+      categorias.push({ ...categoria, color: colorCategoria[categoria.clave] })
+    }
+
+    // lo que se cobra son los segmentos
+    const segmentos = []
+    for (const mes of datos.smsPorMes) {
+      segmentos.push({ clave: mes.clave, etiqueta: mes.etiqueta, total: mes.segmentos })
+    }
+
+    let fallidos = '0%'
+    if (r.smsEnviados + r.smsFallidos > 0) {
+      fallidos = textoPorcentaje(r.smsFallidos, r.smsEnviados + r.smsFallidos)
+    }
+
     cuerpo = (
       <>
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <Indicador titulo="Colegios activos" valor={r.institucionesActivas} detalle={r.institucionesInactivas + ' inhabilitados'} />
-          <Indicador titulo="Alertas" valor={r.alertas} />
-          <Indicador titulo="SMS enviados" valor={r.smsEnviados} detalle={r.smsFallidos + ' fallidos'} />
-          <Indicador titulo="Segmentos de SMS" valor={r.smsSegmentos} detalle="Lo que cobra el proveedor" />
+          <Indicador titulo="Colegios activos" color={CIELO} icono={Building2} valor={r.institucionesActivas} detalle={r.institucionesInactivas + ' inhabilitados'} />
+          <Indicador titulo="Alertas" color={INDIGO} icono={BellRing} valor={r.alertas} />
+          <Indicador titulo="SMS enviados" color="#ec4899" icono={MessageSquare} valor={r.smsEnviados} detalle={fallidos + ' fallidos (' + r.smsFallidos + ')'} />
+          <Indicador titulo="Segmentos de SMS" color="#a855f7" icono={Receipt} valor={r.smsSegmentos} detalle="Lo que cobra el proveedor" />
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-3">
+          <TarjetaGrafico titulo="Usuarios activos por rol" descripcion="En colegios activos">
+            <Dona datos={roles} textoCentro="usuarios" vacio="Sin usuarios activos" />
+          </TarjetaGrafico>
+          <TarjetaGrafico className="lg:col-span-2" titulo="Alertas por mes" descripcion="Cuantas alertas se crearon cada mes">
+            <Linea datos={datos.porMes} />
+          </TarjetaGrafico>
         </div>
 
         <div className="grid gap-4 lg:grid-cols-2">
-          <Barras titulo="Usuarios activos por rol" datos={datos.usuariosPorRol} vacio="Sin usuarios activos" />
-          <Barras titulo="Alertas por categoria" datos={datos.porCategoria} />
+          <TarjetaGrafico
+            titulo="Alertas por categoria"
+            descripcion="Las categorias que se llaman igual en distintos colegios se juntan"
+          >
+            <BarrasHorizontales datos={categorias} />
+          </TarjetaGrafico>
+          <TarjetaGrafico titulo="Segmentos de SMS por mes" descripcion="Partes de 160 caracteres: lo que cobra el proveedor">
+            <Linea datos={segmentos} color={ROSADO} unidad="segmentos" vacio="Sin SMS con estos filtros" />
+          </TarjetaGrafico>
         </div>
-
-        <ColumnasPorMes titulo="Alertas por mes" datos={datos.porMes} campo="total" />
-        <ColumnasPorMes titulo="Segmentos de SMS por mes" datos={datos.smsPorMes} campo="segmentos" vacio="Sin SMS con estos filtros" />
       </>
     )
   } else if (!error) {
@@ -155,6 +213,20 @@ export default function EstadisticasPage() {
           <Cargando />
         ) : (
           <>
+            <p className="-mt-2 mb-3 text-xs text-suave">
+              Alertas de cada colegio de esta pagina por estado; dentro de cada tramo, su porcentaje. Abajo el detalle.
+            </p>
+            <div className="mb-6">
+              <BarrasApiladas
+                filas={filasComparativo(comparativo.contenido)}
+                series={[
+                  { nombre: 'Pendientes', color: ESTADOS.PENDIENTE },
+                  { nombre: 'En proceso', color: ESTADOS.EN_PROCESO },
+                  { nombre: 'Completadas', color: ESTADOS.COMPLETADA },
+                ]}
+                vacio="Ningun colegio tiene alertas con estos filtros"
+              />
+            </div>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[56rem] text-sm">
                 <thead className="tabla-encabezado">
