@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
-import { Building2, KeyRound, LogOut, Menu, PanelLeft, PanelLeftClose } from 'lucide-react'
+import { Building2, ChartColumn, KeyRound, LogOut, Menu, PanelLeft, PanelLeftClose } from 'lucide-react'
 import logoBlanco from '../../assets/logo-blanco.png'
 import { useAuth } from '../../context/AuthContext'
 
 const OPCIONES = [
   { ruta: '/instituciones', texto: 'Instituciones', icono: Building2 },
+  { ruta: '/estadisticas', texto: 'Estadisticas', icono: ChartColumn },
   { ruta: '/contrasena', texto: 'Cambiar contrasena', icono: KeyRound },
 ]
 
