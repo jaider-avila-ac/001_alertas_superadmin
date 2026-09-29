@@ -140,7 +140,7 @@ export default function AdministradoresSeccion({ slug, administradores, alCambia
               </p>
               <div className="mt-1 flex flex-wrap gap-2">
                 {admin.activo ? <Insignia tipo="exito">Activo</Insignia> : <Insignia tipo="peligro">Inactivo</Insignia>}
-                {admin.debeCambiarContrasena && <Insignia tipo="aviso">Debe cambiar contrasena</Insignia>}
+                {admin.debeCambiarContrasena && <Insignia tipo="aviso">Usa la contrasena asignada</Insignia>}
                 {admin.ultimoIngreso && <Insignia tipo="neutro">Ultimo ingreso: {formatearFecha(admin.ultimoIngreso)}</Insignia>}
               </div>
             </div>
