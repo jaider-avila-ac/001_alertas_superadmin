@@ -1,0 +1,2 @@
+# netlify: todas las rutas de react llevan a index.html (si no, recargar una pagina interna da 404)
+/*    /index.html   200
