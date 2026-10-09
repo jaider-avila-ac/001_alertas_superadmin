@@ -60,7 +60,7 @@ export default function Dona({ datos, centro, textoCentro, vacio }) {
   }
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex min-w-0 flex-col items-center gap-4">
       <div className="relative h-48 w-48 shrink-0">
         <Doughnut data={data} options={opciones} />
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
@@ -76,7 +76,7 @@ export default function Dona({ datos, centro, textoCentro, vacio }) {
         {datos.map((dato) => (
           <li key={dato.clave} className="flex items-center gap-2">
             <span className="h-3 w-3 shrink-0" style={{ backgroundColor: dato.color }} />
-            <span className="flex-1 text-texto">{dato.etiqueta}</span>
+            <span className="min-w-0 flex-1 break-words text-texto">{dato.etiqueta}</span>
             <span className="font-semibold tabular-nums text-texto">{dato.total}</span>
             <span className="w-14 text-right tabular-nums text-suave">{textoPorcentaje(dato.total, total)}</span>
           </li>

@@ -17,7 +17,13 @@ const TIPOS_DOCUMENTO = [
   { valor: 'RC', texto: 'Registro civil' },
 ]
 
-export default function DatosAdministradorCampos({ valores, alCambiar }) {
+// ayudaDocumento: al editar el texto cambia, porque la contrasena ya no es el documento nuevo
+export default function DatosAdministradorCampos({ valores, alCambiar, ayudaDocumento }) {
+  let ayuda = 'Sera su usuario y su contrasena inicial'
+  if (ayudaDocumento) {
+    ayuda = ayudaDocumento
+  }
+
   function cambiar(campo, valor) {
     alCambiar({ ...valores, [campo]: valor })
   }
@@ -42,7 +48,7 @@ export default function DatosAdministradorCampos({ valores, alCambiar }) {
         obligatorio
         minLength={3}
         maxLength={20}
-        ayuda="Sera su usuario y su contrasena inicial"
+        ayuda={ayuda}
         value={valores.nroDoc}
         onChange={(e) => cambiar('nroDoc', e.target.value.replace(/[^A-Za-z0-9]/g, ''))}
       />

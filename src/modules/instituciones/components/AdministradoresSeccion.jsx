@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { KeyRound, LockKeyhole, Power, UserPlus } from 'lucide-react'
+import { KeyRound, LockKeyhole, Pencil, Power, UserPlus } from 'lucide-react'
 import Insignia from '../../../components/ui/Insignia'
 import Mensaje from '../../../components/ui/Mensaje'
 import Modal from '../../../components/ui/Modal'
 import Vacio from '../../../components/ui/Vacio'
 import { nuevaLlave } from '../../../services/api'
 import {
+  actualizarAdministrador,
   asignarContrasenaAdministrador,
   cambiarEstadoAdministrador,
   crearAdministrador,
@@ -29,6 +30,43 @@ export default function AdministradoresSeccion({ slug, administradores, alCambia
   const [adminClave, setAdminClave] = useState(null)
   const [claveNueva, setClaveNueva] = useState('')
   const [errorClave, setErrorClave] = useState('')
+
+  // editar sus datos: nombres, documento, correo y celular
+  const [adminEditar, setAdminEditar] = useState(null)
+  const [datosEditar, setDatosEditar] = useState(ADMINISTRADOR_VACIO)
+  const [errorEditar, setErrorEditar] = useState('')
+
+  function abrirEditar(admin) {
+    setAdminEditar(admin)
+    setDatosEditar({
+      tipoDoc: admin.tipoDoc,
+      nroDoc: admin.nroDoc,
+      nombres: admin.nombres,
+      apellidos: admin.apellidos,
+      correo: admin.correo || '',
+      celular: admin.celular || '',
+    })
+    setErrorEditar('')
+  }
+
+  async function guardarEdicion(e) {
+    e.preventDefault()
+    setErrorEditar('')
+    setGuardando(true)
+    try {
+      const actualizado = await actualizarAdministrador(slug, adminEditar.codigo, vaciosANull(datosEditar))
+      alCambiar(actualizado)
+      let texto = 'Datos de ' + actualizado.nombres + ' guardados.'
+      if (actualizado.nroDoc !== adminEditar.nroDoc) {
+        texto = texto + ' Ahora entra con el usuario ' + actualizado.nroDoc + ' y la misma contrasena.'
+      }
+      setMensaje(texto)
+      setAdminEditar(null)
+    } catch (err) {
+      setErrorEditar(err.message)
+    }
+    setGuardando(false)
+  }
 
   async function restablecer(admin) {
     const confirmado = window.confirm(
@@ -145,6 +183,10 @@ export default function AdministradoresSeccion({ slug, administradores, alCambia
               </div>
             </div>
             <div className="flex shrink-0 flex-wrap gap-2">
+              <button className="btn-secundario" disabled={ocupado === admin.codigo} onClick={() => abrirEditar(admin)}>
+                <Pencil size={16} />
+                Editar
+              </button>
               <button className="btn-secundario" disabled={ocupado === admin.codigo} onClick={() => abrirAsignar(admin)}>
                 <LockKeyhole size={16} />
                 Asignar contrasena
@@ -196,6 +238,27 @@ export default function AdministradoresSeccion({ slug, administradores, alCambia
               </button>
               <button type="submit" className="btn-primario" disabled={guardando || claveNueva.length < 8}>
                 {guardando ? 'Guardando...' : 'Asignar'}
+              </button>
+            </div>
+          </form>
+        )}
+      </Modal>
+
+      <Modal abierto={adminEditar !== null} titulo="Editar administrador" alCerrar={() => setAdminEditar(null)}>
+        {adminEditar && (
+          <form onSubmit={guardarEdicion} className="space-y-4">
+            <Mensaje tipo="error">{errorEditar}</Mensaje>
+            <DatosAdministradorCampos
+              valores={datosEditar}
+              alCambiar={setDatosEditar}
+              ayudaDocumento="Es su usuario para entrar. Si lo cambias, entrara con el nuevo y la misma contrasena"
+            />
+            <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <button type="button" className="btn-secundario" onClick={() => setAdminEditar(null)}>
+                Cancelar
+              </button>
+              <button type="submit" className="btn-primario" disabled={guardando}>
+                {guardando ? 'Guardando...' : 'Guardar cambios'}
               </button>
             </div>
           </form>

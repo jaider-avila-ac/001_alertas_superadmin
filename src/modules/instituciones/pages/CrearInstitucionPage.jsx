@@ -42,7 +42,7 @@ export default function CrearInstitucionPage() {
 
   if (creada) {
     return (
-      <div className="mx-auto max-w-2xl space-y-4">
+      <div className="max-w-2xl space-y-4">
         <div className="tarjeta space-y-4">
           <div className="flex items-center gap-2 text-exito-700">
             <CircleCheck size={22} />
@@ -50,7 +50,7 @@ export default function CrearInstitucionPage() {
           </div>
 
           <p className="text-sm text-suave">
-            <strong className="text-texto">{creada.institucion.nombre}</strong> ya tiene sus grados, el anio lectivo
+            <strong className="text-texto">{creada.institucion.nombre}</strong> ya tiene sus grados, el año lectivo
             activo y las categorias de alerta. Comparte este enlace con la institucion:
           </p>
 
@@ -87,12 +87,11 @@ export default function CrearInstitucionPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-4">
+    <div className="max-w-3xl space-y-4">
       <Link to="/instituciones" className="inline-flex items-center gap-1 text-sm text-suave hover:text-texto">
         <ArrowLeft size={16} />
         Instituciones
       </Link>
-      <h1 className="text-xl font-semibold">Nueva institucion</h1>
 
       <form onSubmit={enviar} className="space-y-4">
         <Mensaje tipo="error">{error}</Mensaje>

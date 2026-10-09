@@ -1,5 +1,5 @@
 import { Bar } from 'react-chartjs-2'
-import { LINEA, TINTA, textoPorcentaje } from './configuracion'
+import { LINEA, TINTA, partirEtiqueta, textoPorcentaje } from './configuracion'
 
 // una barra por fila partida en tramos (ej. por psicorientador: completadas y en curso).
 // dentro de cada tramo su porcentaje de la fila. filas: [{ etiqueta, valores: [n, n] }]
@@ -43,7 +43,16 @@ export default function BarrasApiladas({ filas, series, vacio }) {
     maintainAspectRatio: false,
     scales: {
       x: { stacked: true, beginAtZero: true, grid: { color: LINEA }, ticks: { precision: 0 }, border: { display: false } },
-      y: { stacked: true, grid: { display: false }, ticks: { color: TINTA } },
+      y: {
+        stacked: true,
+        grid: { display: false },
+        ticks: {
+          color: TINTA,
+          callback: function (valor) {
+            return partirEtiqueta(this.getLabelForValue(valor))
+          },
+        },
+      },
     },
     plugins: {
       tooltip: {
@@ -72,7 +81,7 @@ export default function BarrasApiladas({ filas, series, vacio }) {
   const alto = Math.max(110, filas.length * 40 + 40)
 
   return (
-    <div>
+    <div className="min-w-0">
       <div className="mb-3 flex flex-wrap gap-4 text-sm">
         {series.map((serie) => (
           <span key={serie.nombre} className="flex items-center gap-2">
@@ -81,7 +90,7 @@ export default function BarrasApiladas({ filas, series, vacio }) {
           </span>
         ))}
       </div>
-      <div style={{ height: alto + 'px' }}>
+      <div className="relative w-full min-w-0" style={{ height: alto + 'px' }}>
         <Bar data={{ labels: etiquetas, datasets: datasets }} options={opciones} />
       </div>
     </div>

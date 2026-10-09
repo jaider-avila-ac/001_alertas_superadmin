@@ -61,7 +61,7 @@ export default function Columnas({ datos, conPorcentaje, vacio, unidad }) {
   }
 
   return (
-    <div className="h-64">
+    <div className="relative h-64 w-full min-w-0">
       <Bar data={data} options={opciones} />
     </div>
   )

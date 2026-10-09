@@ -3,16 +3,38 @@
 const URL_API = import.meta.env.VITE_API_URL
 const CLAVE_TOKEN = 'sa_token'
 
+// si el navegador no deja guardar (sin espacio o bloqueado) el token queda en memoria:
+// se sigue trabajando y solo al recargar la pagina hay que volver a entrar
+let tokenEnMemoria = null
+
 export function guardarToken(token) {
-  localStorage.setItem(CLAVE_TOKEN, token)
+  tokenEnMemoria = token
+  try {
+    localStorage.setItem(CLAVE_TOKEN, token)
+  } catch (e) {
+    // queda en memoria
+  }
 }
 
 export function leerToken() {
-  return localStorage.getItem(CLAVE_TOKEN)
+  try {
+    const guardado = localStorage.getItem(CLAVE_TOKEN)
+    if (guardado !== null) {
+      return guardado
+    }
+  } catch (e) {
+    // bloqueado: se usa el de memoria
+  }
+  return tokenEnMemoria
 }
 
 export function borrarToken() {
-  localStorage.removeItem(CLAVE_TOKEN)
+  tokenEnMemoria = null
+  try {
+    localStorage.removeItem(CLAVE_TOKEN)
+  } catch (e) {
+    // nada que hacer
+  }
 }
 
 // para los POST que crean algo: si el usuario da doble clic, el backend rechaza el segundo

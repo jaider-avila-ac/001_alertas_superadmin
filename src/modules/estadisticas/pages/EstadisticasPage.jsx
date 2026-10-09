@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { BellRing, Building2, MessageSquare, Receipt, X } from 'lucide-react'
 import Cargando from '../../../components/ui/Cargando'
 import Insignia from '../../../components/ui/Insignia'
 import Mensaje from '../../../components/ui/Mensaje'
 import Paginacion from '../../../components/ui/Paginacion'
+import useDatos from '../../../lib/useDatos'
 import { verComparativo, verEstadisticas } from '../../../services/estadisticaService'
 import BarrasApiladas from '../../../components/graficos/BarrasApiladas'
 import BarrasHorizontales from '../../../components/graficos/BarrasHorizontales'
@@ -52,55 +53,35 @@ export default function EstadisticasPage() {
   // { slug, nombre } del colegio elegido en el comparativo, o null para todos
   const [institucion, setInstitucion] = useState(null)
   const [pagina, setPagina] = useState(0)
-  const [datos, setDatos] = useState(null)
-  const [comparativo, setComparativo] = useState(null)
-  const [error, setError] = useState('')
-  const consulta = useRef(0)
-  const consultaTabla = useRef(0)
 
   let slug = ''
   if (institucion) {
     slug = institucion.slug
   }
 
-  const cargar = useCallback(async () => {
-    consulta.current = consulta.current + 1
-    const esta = consulta.current
-    setError('')
-    try {
-      const respuesta = await verEstadisticas({ institucion: slug, desde: desde, hasta: hasta })
-      if (esta === consulta.current) {
-        setDatos(respuesta)
-      }
-    } catch (err) {
-      if (esta === consulta.current) {
-        setError(err.message)
-      }
+  // una sola peticion trae todo (con la primera pagina del comparativo); con cache al volver.
+  // solo al pasar a otra pagina del comparativo se pide esa pagina
+  const consulta = useDatos(['estadisticas', slug, desde, hasta], function () {
+    return verEstadisticas({ institucion: slug, desde: desde, hasta: hasta })
+  })
+  const consultaPagina = useDatos(
+    ['comparativo', desde, hasta, pagina],
+    function () {
+      return verComparativo({ desde: desde, hasta: hasta }, pagina)
+    },
+    { activa: pagina > 0 }
+  )
+
+  const datos = consulta.datos
+  let comparativo = null
+  if (pagina === 0) {
+    if (datos) {
+      comparativo = datos.comparativo
     }
-  }, [slug, desde, hasta])
-
-  const cargarTabla = useCallback(async () => {
-    consultaTabla.current = consultaTabla.current + 1
-    const esta = consultaTabla.current
-    try {
-      const respuesta = await verComparativo({ desde: desde, hasta: hasta }, pagina)
-      if (esta === consultaTabla.current) {
-        setComparativo(respuesta)
-      }
-    } catch (err) {
-      if (esta === consultaTabla.current) {
-        setError(err.message)
-      }
-    }
-  }, [desde, hasta, pagina])
-
-  useEffect(() => {
-    cargar()
-  }, [cargar])
-
-  useEffect(() => {
-    cargarTabla()
-  }, [cargarTabla])
+  } else if (consultaPagina.datos) {
+    comparativo = consultaPagina.datos
+  }
+  const error = consulta.error || consultaPagina.error
 
   function cambiarFecha(cambiar, valor) {
     cambiar(valor)

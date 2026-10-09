@@ -1,30 +1,32 @@
-import { useCallback, useEffect, useState } from 'react'
+import useDatos from '../../../lib/useDatos'
 import { buscarInstitucion, listarAdministradores } from '../../../services/institucionService'
 
-// detalle de una institucion con sus administradores
+// detalle de una institucion con sus administradores, con cache
 export default function useInstitucion(slug) {
-  const [institucion, setInstitucion] = useState(null)
-  const [administradores, setAdministradores] = useState([])
-  const [cargando, setCargando] = useState(true)
-  const [error, setError] = useState('')
+  const consultaInstitucion = useDatos(
+    ['institucion', slug],
+    function () {
+      return buscarInstitucion(slug)
+    },
+    { mantenerAnterior: false }
+  )
+  const consultaAdministradores = useDatos(
+    ['administradores', slug],
+    function () {
+      return listarAdministradores(slug)
+    },
+    { mantenerAnterior: false }
+  )
 
-  const cargar = useCallback(async () => {
-    setCargando(true)
-    setError('')
-    try {
-      const datos = await buscarInstitucion(slug)
-      const admins = await listarAdministradores(slug)
-      setInstitucion(datos)
-      setAdministradores(admins)
-    } catch (err) {
-      setError(err.message)
-    }
-    setCargando(false)
-  }, [slug])
+  let institucion = null
+  if (consultaInstitucion.datos) {
+    institucion = consultaInstitucion.datos
+  }
 
-  useEffect(() => {
-    cargar()
-  }, [cargar])
+  let administradores = []
+  if (consultaAdministradores.datos) {
+    administradores = consultaAdministradores.datos
+  }
 
   // despues de una accion se reemplaza solo lo que cambio, sin volver a cargar todo
   function reemplazarAdministrador(actualizado) {
@@ -36,21 +38,26 @@ export default function useInstitucion(slug) {
         lista.push(admin)
       }
     }
-    setAdministradores(lista)
+    consultaAdministradores.poner(lista)
   }
 
   function agregarAdministrador(nuevo) {
-    setAdministradores([...administradores, nuevo])
+    consultaAdministradores.poner([...administradores, nuevo])
+  }
+
+  async function recargar() {
+    await consultaInstitucion.recargar()
+    await consultaAdministradores.recargar()
   }
 
   return {
     institucion: institucion,
-    setInstitucion: setInstitucion,
+    setInstitucion: consultaInstitucion.poner,
     administradores: administradores,
     reemplazarAdministrador: reemplazarAdministrador,
     agregarAdministrador: agregarAdministrador,
-    cargando: cargando,
-    error: error,
-    recargar: cargar,
+    cargando: consultaInstitucion.cargando || consultaAdministradores.cargando,
+    error: consultaInstitucion.error || consultaAdministradores.error,
+    recargar: recargar,
   }
 }

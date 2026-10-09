@@ -43,8 +43,7 @@ export default function InstitucionesPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold">Instituciones</h1>
+      <div className="flex flex-wrap items-center gap-3">
         <Link to="/nueva-institucion" className="btn-primario">
           <Plus size={16} />
           Nueva institucion

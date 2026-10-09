@@ -1,0 +1,17 @@
+# superadmin servido por nginx. VITE_API_URL y VITE_URL_FRONT salen del .env de esta carpeta
+#   docker compose up -d --build
+name: alertas-superadmin
+
+services:
+  superadmin:
+    build:
+      context: .
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+        VITE_URL_FRONT: ${VITE_URL_FRONT}
+    image: alertas-superadmin
+    container_name: alertas-superadmin
+    restart: unless-stopped
+    ports:
+      # solo en la maquina: desde afuera se entra por el nginx del servidor (con https)
+      - "127.0.0.1:${SUPERADMIN_PORT:-8082}:8080"

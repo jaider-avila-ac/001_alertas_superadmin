@@ -1,5 +1,5 @@
 import { Bar } from 'react-chartjs-2'
-import { AZUL, LINEA, TINTA, sumar, textoPorcentaje } from './configuracion'
+import { AZUL, LINEA, TINTA, partirEtiqueta, sumar, textoPorcentaje } from './configuracion'
 
 // comparar cantidades entre muchas categorias con nombres largos (categorias, grupos).
 // al final de cada barra: el numero y su porcentaje del total.
@@ -37,7 +37,17 @@ export default function BarrasHorizontales({ datos, vacio }) {
     layout: { padding: { right: 70 } },
     scales: {
       x: { beginAtZero: true, suggestedMax: maximo, grid: { color: LINEA }, ticks: { precision: 0 }, border: { display: false } },
-      y: { grid: { display: false }, ticks: { color: TINTA, autoSkip: false } },
+      y: {
+        grid: { display: false },
+        ticks: {
+          color: TINTA,
+          autoSkip: false,
+          // los nombres largos van en varias lineas para que no se corten en el celular
+          callback: function (valor) {
+            return partirEtiqueta(this.getLabelForValue(valor))
+          },
+        },
+      },
     },
     plugins: {
       tooltip: {
@@ -65,7 +75,7 @@ export default function BarrasHorizontales({ datos, vacio }) {
   const alto = Math.max(120, datos.length * 34 + 30)
 
   return (
-    <div style={{ height: alto + 'px' }}>
+    <div className="relative w-full min-w-0" style={{ height: alto + 'px' }}>
       <Bar data={data} options={opciones} />
     </div>
   )

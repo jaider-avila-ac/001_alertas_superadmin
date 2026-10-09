@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { borrarToken, guardarToken, leerToken } from '../services/api'
 import { iniciarSesion, obtenerYo } from '../services/authService'
+import { olvidarTodo } from '../lib/consultas'
 
 const AuthContext = createContext(null)
 
@@ -29,6 +30,7 @@ export function AuthProvider({ children }) {
   // api.js lanza este evento cuando el backend responde 401
   useEffect(() => {
     function alVencer() {
+      olvidarTodo()
       setSuperadmin(null)
     }
     window.addEventListener('sesion-vencida', alVencer)
@@ -37,6 +39,7 @@ export function AuthProvider({ children }) {
 
   async function entrar(usuario, contrasena) {
     const respuesta = await iniciarSesion(usuario, contrasena)
+    olvidarTodo()
     guardarToken(respuesta.token)
     setSuperadmin(respuesta.superadmin)
   }
@@ -47,6 +50,7 @@ export function AuthProvider({ children }) {
   }
 
   function salir() {
+    olvidarTodo()
     borrarToken()
     setSuperadmin(null)
   }

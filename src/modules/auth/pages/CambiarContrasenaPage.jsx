@@ -40,8 +40,7 @@ export default function CambiarContrasenaPage() {
   }
 
   return (
-    <div className="mx-auto max-w-md">
-      <h1 className="mb-4 text-xl font-semibold">Cambiar contrasena</h1>
+    <div className="max-w-md">
 
       <form onSubmit={enviar} className="tarjeta space-y-4">
         <Mensaje tipo="error">{error}</Mensaje>

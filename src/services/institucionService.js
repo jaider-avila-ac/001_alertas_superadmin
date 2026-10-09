@@ -54,6 +54,11 @@ export function crearAdministrador(slug, datos, llave) {
   return api.post(BASE + '/' + slug + '/administradores', datos, { llave: llave || nuevaLlave() })
 }
 
+// nombres, documento, correo y celular. si cambia el documento, entra con el nuevo
+export function actualizarAdministrador(slug, codigo, datos) {
+  return api.put(BASE + '/' + slug + '/administradores/' + codigo, datos)
+}
+
 export function restablecerContrasenaAdministrador(slug, codigo) {
   return api.post(BASE + '/' + slug + '/administradores/' + codigo + '/restablecer-contrasena')
 }
