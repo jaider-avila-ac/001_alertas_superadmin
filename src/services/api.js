@@ -112,4 +112,7 @@ export const api = {
   patch: function (ruta, cuerpo) {
     return solicitud('PATCH', ruta, cuerpo)
   },
+  delete: function (ruta) {
+    return solicitud('DELETE', ruta)
+  },
 }

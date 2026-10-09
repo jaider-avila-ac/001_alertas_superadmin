@@ -10,6 +10,7 @@ import { formatearFecha, vaciosANull } from '../../../utils/texto'
 import AdministradoresSeccion from '../components/AdministradoresSeccion'
 import DatosInstitucionCampos from '../components/DatosInstitucionCampos'
 import InactivarModal from '../components/InactivarModal'
+import SesionesSeccion from '../components/SesionesSeccion'
 import useInstitucion from '../hooks/useInstitucion'
 
 const URL_FRONT = import.meta.env.VITE_URL_FRONT
@@ -263,6 +264,8 @@ export default function InstitucionDetallePage() {
         alCambiar={detalle.reemplazarAdministrador}
         alAgregar={detalle.agregarAdministrador}
       />
+
+      <SesionesSeccion slug={slug} />
 
       <InactivarModal
         abierto={modalInactivar}
