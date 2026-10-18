@@ -64,8 +64,7 @@ export default function CrearInstitucionPage() {
           </div>
 
           <p className="text-sm text-suave">
-            <strong className="text-texto">{creada.institucion.nombre}</strong> ya tiene sus grados, el año lectivo
-            activo y las categorias de alerta. Comparte este enlace con la institucion:
+            <strong className="text-texto">{creada.institucion.nombre}</strong> ya tiene las categorias de alerta. Comparte este enlace con la institucion:
           </p>
 
           <div className="flex flex-col gap-2 bg-fondo p-3 sm:flex-row sm:items-center sm:justify-between">
