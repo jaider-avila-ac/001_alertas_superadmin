@@ -4,6 +4,7 @@ import Insignia from '../../../components/ui/Insignia'
 import Mensaje from '../../../components/ui/Mensaje'
 import Modal from '../../../components/ui/Modal'
 import Vacio from '../../../components/ui/Vacio'
+import { errorContrasena, hayErrores } from '../../../lib/validaciones'
 import { nuevaLlave } from '../../../services/api'
 import {
   actualizarAdministrador,
@@ -13,7 +14,7 @@ import {
   restablecerContrasenaAdministrador,
 } from '../../../services/institucionService'
 import { formatearFecha, vaciosANull } from '../../../utils/texto'
-import DatosAdministradorCampos, { ADMINISTRADOR_VACIO } from './DatosAdministradorCampos'
+import DatosAdministradorCampos, { ADMINISTRADOR_VACIO, revisarAdministrador } from './DatosAdministradorCampos'
 
 export default function AdministradoresSeccion({ slug, administradores, alCambiar, alAgregar }) {
   const [mensaje, setMensaje] = useState('')
@@ -24,6 +25,7 @@ export default function AdministradoresSeccion({ slug, administradores, alCambia
   const [nuevo, setNuevo] = useState(ADMINISTRADOR_VACIO)
   const [llave, setLlave] = useState(nuevaLlave())
   const [errorModal, setErrorModal] = useState('')
+  const [erroresNuevo, setErroresNuevo] = useState({})
   const [guardando, setGuardando] = useState(false)
 
   // asignar contrasena: el admin no puede cambiar la suya, se la pone el superadmin
@@ -35,6 +37,7 @@ export default function AdministradoresSeccion({ slug, administradores, alCambia
   const [adminEditar, setAdminEditar] = useState(null)
   const [datosEditar, setDatosEditar] = useState(ADMINISTRADOR_VACIO)
   const [errorEditar, setErrorEditar] = useState('')
+  const [erroresEditar, setErroresEditar] = useState({})
 
   function abrirEditar(admin) {
     setAdminEditar(admin)
@@ -47,11 +50,20 @@ export default function AdministradoresSeccion({ slug, administradores, alCambia
       celular: admin.celular || '',
     })
     setErrorEditar('')
+    setErroresEditar({})
   }
 
   async function guardarEdicion(e) {
     e.preventDefault()
     setErrorEditar('')
+
+    const problemas = revisarAdministrador(datosEditar)
+    setErroresEditar(problemas)
+    if (hayErrores(problemas)) {
+      setErrorEditar('Revisa los datos marcados en rojo')
+      return
+    }
+
     setGuardando(true)
     try {
       const actualizado = await actualizarAdministrador(slug, adminEditar.codigo, vaciosANull(datosEditar))
@@ -114,6 +126,13 @@ export default function AdministradoresSeccion({ slug, administradores, alCambia
   async function guardarClave(e) {
     e.preventDefault()
     setErrorClave('')
+
+    const problema = errorContrasena(claveNueva)
+    if (problema) {
+      setErrorClave(problema)
+      return
+    }
+
     setGuardando(true)
     try {
       const actualizado = await asignarContrasenaAdministrador(slug, adminClave.codigo, claveNueva)
@@ -130,12 +149,21 @@ export default function AdministradoresSeccion({ slug, administradores, alCambia
     setNuevo(ADMINISTRADOR_VACIO)
     setLlave(nuevaLlave())
     setErrorModal('')
+    setErroresNuevo({})
     setModalAbierto(true)
   }
 
   async function guardarNuevo(e) {
     e.preventDefault()
     setErrorModal('')
+
+    const problemas = revisarAdministrador(nuevo)
+    setErroresNuevo(problemas)
+    if (hayErrores(problemas)) {
+      setErrorModal('Revisa los datos marcados en rojo')
+      return
+    }
+
     setGuardando(true)
     try {
       const creado = await crearAdministrador(slug, vaciosANull(nuevo), llave)
@@ -230,7 +258,9 @@ export default function AdministradoresSeccion({ slug, administradores, alCambia
                 value={claveNueva}
                 onChange={(e) => setClaveNueva(e.target.value)}
               />
-              <p className="mt-1 text-xs text-suave">Minimo 8 caracteres. Se muestra para que la puedas dictar.</p>
+              <p className="mt-1 text-xs text-suave">
+                Minimo 8 caracteres, con letras y numeros. Se muestra para que la puedas dictar.
+              </p>
             </div>
             <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
               <button type="button" className="btn-secundario" onClick={() => setAdminClave(null)}>
@@ -252,6 +282,7 @@ export default function AdministradoresSeccion({ slug, administradores, alCambia
               valores={datosEditar}
               alCambiar={setDatosEditar}
               ayudaDocumento="Es su usuario para entrar. Si lo cambias, entrara con el nuevo y la misma contrasena"
+              errores={erroresEditar}
             />
             <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
               <button type="button" className="btn-secundario" onClick={() => setAdminEditar(null)}>
@@ -268,7 +299,7 @@ export default function AdministradoresSeccion({ slug, administradores, alCambia
       <Modal abierto={modalAbierto} titulo="Nuevo administrador" alCerrar={() => setModalAbierto(false)}>
         <form onSubmit={guardarNuevo} className="space-y-4">
           <Mensaje tipo="error">{errorModal}</Mensaje>
-          <DatosAdministradorCampos valores={nuevo} alCambiar={setNuevo} />
+          <DatosAdministradorCampos valores={nuevo} alCambiar={setNuevo} errores={erroresNuevo} />
           <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
             <button type="button" className="btn-secundario" onClick={() => setModalAbierto(false)}>
               Cancelar

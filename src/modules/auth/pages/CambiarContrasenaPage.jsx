@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { KeyRound } from 'lucide-react'
 import { useAuth } from '../../../context/AuthContext'
+import { errorContrasena } from '../../../lib/validaciones'
 import { cambiarContrasena } from '../../../services/authService'
 import CampoContrasena from '../../../components/ui/CampoContrasena'
 import Mensaje from '../../../components/ui/Mensaje'
@@ -19,6 +20,17 @@ export default function CambiarContrasenaPage() {
     e.preventDefault()
     setError('')
     setExito('')
+
+    const problema = errorContrasena(nueva)
+    if (problema) {
+      setError(problema)
+      return
+    }
+
+    if (nueva === actual) {
+      setError('La contrasena nueva debe ser diferente a la actual')
+      return
+    }
 
     if (nueva !== repetir) {
       setError('La contrasena nueva y la confirmacion no coinciden')
@@ -59,8 +71,9 @@ export default function CambiarContrasenaPage() {
           etiqueta="Contrasena nueva"
           obligatorio
           minLength={8}
+          maxLength={72}
           autoComplete="new-password"
-          ayuda="Minimo 8 caracteres"
+          ayuda="Minimo 8 caracteres, con letras y numeros"
           value={nueva}
           onChange={(e) => setNueva(e.target.value)}
         />

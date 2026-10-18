@@ -2,8 +2,13 @@ import { useState } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
 
 // input de contrasena con el ojito para verla
-export default function CampoContrasena({ etiqueta, ayuda, obligatorio, id, ...props }) {
+export default function CampoContrasena({ etiqueta, ayuda, error, obligatorio, id, ...props }) {
   const [visible, setVisible] = useState(false)
+
+  let clase = 'input pr-12'
+  if (error) {
+    clase = 'input pr-12 border-peligro-600'
+  }
 
   return (
     <div>
@@ -12,7 +17,7 @@ export default function CampoContrasena({ etiqueta, ayuda, obligatorio, id, ...p
         {obligatorio && <span className="text-peligro-600"> *</span>}
       </label>
       <div className="relative">
-        <input id={id} type={visible ? 'text' : 'password'} className="input pr-12" required={obligatorio} {...props} />
+        <input id={id} type={visible ? 'text' : 'password'} className={clase} required={obligatorio} aria-invalid={error ? true : undefined} {...props} />
         <button
           type="button"
           onClick={() => setVisible(!visible)}
@@ -22,7 +27,8 @@ export default function CampoContrasena({ etiqueta, ayuda, obligatorio, id, ...p
           {visible ? <EyeOff size={20} /> : <Eye size={20} />}
         </button>
       </div>
-      {ayuda && <p className="mt-1 text-xs text-suave">{ayuda}</p>}
+      {error && <p className="mt-1 text-xs text-peligro-600">{error}</p>}
+      {!error && ayuda && <p className="mt-1 text-xs text-suave">{ayuda}</p>}
     </div>
   )
 }

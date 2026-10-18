@@ -3,11 +3,12 @@ import { Link } from 'react-router-dom'
 import { ArrowLeft, CircleCheck } from 'lucide-react'
 import BotonCopiar from '../../../components/ui/BotonCopiar'
 import Mensaje from '../../../components/ui/Mensaje'
+import { hayErrores } from '../../../lib/validaciones'
 import { nuevaLlave } from '../../../services/api'
 import { crearInstitucion } from '../../../services/institucionService'
 import { vaciosANull } from '../../../utils/texto'
-import DatosAdministradorCampos, { ADMINISTRADOR_VACIO } from '../components/DatosAdministradorCampos'
-import DatosInstitucionCampos, { INSTITUCION_VACIA } from '../components/DatosInstitucionCampos'
+import DatosAdministradorCampos, { ADMINISTRADOR_VACIO, revisarAdministrador } from '../components/DatosAdministradorCampos'
+import DatosInstitucionCampos, { INSTITUCION_VACIA, revisarInstitucion } from '../components/DatosInstitucionCampos'
 
 const URL_FRONT = import.meta.env.VITE_URL_FRONT
 
@@ -19,12 +20,25 @@ export default function CrearInstitucionPage() {
   // una llave por intento: el doble clic sobre "Crear" no crea dos instituciones
   const [llave, setLlave] = useState(nuevaLlave())
   const [error, setError] = useState('')
+  const [erroresInstitucion, setErroresInstitucion] = useState({})
+  const [erroresAdministrador, setErroresAdministrador] = useState({})
   const [enviando, setEnviando] = useState(false)
   const [creada, setCreada] = useState(null)
 
   async function enviar(e) {
     e.preventDefault()
     setError('')
+
+    const problemasInstitucion = revisarInstitucion(institucion)
+    const problemasAdministrador = revisarAdministrador(administrador)
+    setErroresInstitucion(problemasInstitucion)
+    setErroresAdministrador(problemasAdministrador)
+    if (hayErrores(problemasInstitucion) || hayErrores(problemasAdministrador)) {
+      setError('Revisa los datos marcados en rojo')
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
+
     setEnviando(true)
     try {
       const respuesta = await crearInstitucion(
@@ -104,6 +118,7 @@ export default function CrearInstitucionPage() {
             slugAutomatico={slugAutomatico}
             setSlugAutomatico={setSlugAutomatico}
             urlFront={URL_FRONT}
+            errores={erroresInstitucion}
           />
         </section>
 
@@ -112,7 +127,7 @@ export default function CrearInstitucionPage() {
             <h2 className="font-semibold">Primer administrador</h2>
             <p className="text-sm text-suave">Su usuario y contrasena inicial seran el numero de documento.</p>
           </div>
-          <DatosAdministradorCampos valores={administrador} alCambiar={setAdministrador} />
+          <DatosAdministradorCampos valores={administrador} alCambiar={setAdministrador} errores={erroresAdministrador} />
         </section>
 
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">

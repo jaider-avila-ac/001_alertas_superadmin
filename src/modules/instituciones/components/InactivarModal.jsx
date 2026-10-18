@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Modal from '../../../components/ui/Modal'
 import Mensaje from '../../../components/ui/Mensaje'
+import { errorConLetras } from '../../../lib/validaciones'
 
 export default function InactivarModal({ abierto, nombre, alCerrar, alConfirmar }) {
   const [motivo, setMotivo] = useState('')
@@ -16,6 +17,11 @@ export default function InactivarModal({ abierto, nombre, alCerrar, alConfirmar 
   async function confirmar(e) {
     e.preventDefault()
     setError('')
+    const problema = errorConLetras(motivo, 'El motivo debe tener letras')
+    if (problema) {
+      setError(problema)
+      return
+    }
     setEnviando(true)
     try {
       await alConfirmar(motivo.trim())

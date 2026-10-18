@@ -48,6 +48,7 @@ export default function LoginPage() {
           obligatorio
           autoComplete="username"
           placeholder="Ingresa tu usuario"
+          maxLength={60}
           value={usuario}
           onChange={(e) => setUsuario(e.target.value)}
         />
@@ -56,6 +57,7 @@ export default function LoginPage() {
           etiqueta="Contrasena"
           obligatorio
           placeholder="Ingresa tu contrasena"
+          maxLength={72}
           autoComplete="current-password"
           value={contrasena}
           onChange={(e) => setContrasena(e.target.value)}

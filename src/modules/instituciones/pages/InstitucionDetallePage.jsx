@@ -5,10 +5,11 @@ import BotonCopiar from '../../../components/ui/BotonCopiar'
 import Cargando from '../../../components/ui/Cargando'
 import Insignia from '../../../components/ui/Insignia'
 import Mensaje from '../../../components/ui/Mensaje'
+import { hayErrores } from '../../../lib/validaciones'
 import { activarInstitucion, actualizarInstitucion, cambiarSms, inactivarInstitucion } from '../../../services/institucionService'
 import { formatearFecha, vaciosANull } from '../../../utils/texto'
 import AdministradoresSeccion from '../components/AdministradoresSeccion'
-import DatosInstitucionCampos from '../components/DatosInstitucionCampos'
+import DatosInstitucionCampos, { revisarInstitucion } from '../components/DatosInstitucionCampos'
 import InactivarModal from '../components/InactivarModal'
 import SesionesSeccion from '../components/SesionesSeccion'
 import useInstitucion from '../hooks/useInstitucion'
@@ -47,6 +48,7 @@ export default function InstitucionDetallePage() {
   const [formulario, setFormulario] = useState(null)
   const [guardando, setGuardando] = useState(false)
   const [errorEdicion, setErrorEdicion] = useState('')
+  const [erroresEdicion, setErroresEdicion] = useState({})
 
   const [modalInactivar, setModalInactivar] = useState(false)
   const [mensaje, setMensaje] = useState('')
@@ -73,11 +75,20 @@ export default function InstitucionDetallePage() {
   function empezarEdicion() {
     setFormulario(datosParaFormulario(institucion))
     setErrorEdicion('')
+    setErroresEdicion({})
     setEditando(true)
   }
 
   async function guardarEdicion(e) {
     e.preventDefault()
+
+    const problemas = revisarInstitucion(formulario)
+    setErroresEdicion(problemas)
+    if (hayErrores(problemas)) {
+      setErrorEdicion('Revisa los datos marcados en rojo')
+      return
+    }
+
     if (formulario.slug !== institucion.slug) {
       const seguro = window.confirm('Cambiar el enlace hace que el anterior deje de funcionar. ¿Continuar?')
       if (!seguro) {
@@ -179,6 +190,7 @@ export default function InstitucionDetallePage() {
                 slugAutomatico={false}
                 setSlugAutomatico={() => {}}
                 urlFront={URL_FRONT}
+                errores={erroresEdicion}
               />
               <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
                 <button type="button" className="btn-secundario" onClick={() => setEditando(false)}>
