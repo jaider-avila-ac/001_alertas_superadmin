@@ -24,52 +24,34 @@ Chart.defaults.plugins.legend.display = false
 // las etiquetas se prenden en cada grafico
 Chart.defaults.plugins.datalabels = { display: false }
 
-// colores del dashboard del sistema anterior (tailwind: indigo, pink, sky, amber, emerald, purple, blue).
-// este orden separa bien los vecinos, tambien para daltonismo. el color sigue a la categoria, no a su puesto
-export const INDIGO = '#6366f1'
-export const ROSADO = '#f826a9'
-export const CIELO = '#0ea5e9'
-export const AMBAR = '#fbbf24'
-export const ESMERALDA = '#34d399'
-export const MORADO = '#c084fc'
+// la plataforma usa solo cinco colores: el fucsia de la marca y cuatro mas.
+// son los mismos de tailwind.config.js. el gris queda para "sin dato" y canceladas
+export const FUCSIA = '#ec4899'
+export const AZUL = '#3b82f6'
 export const VERDE = '#10b981'
-export const AZUL = '#60a5fa'
+export const AMBAR = '#f59e0b'
+export const ROJO = '#ef4444'
 export const GRIS = '#9ca3af'
-
-export const CATEGORICOS = [INDIGO, ROSADO, CIELO, AMBAR, ESMERALDA, MORADO, VERDE, AZUL]
 
 // estados de las alertas (siempre con su nombre al lado)
 export const ESTADOS = {
   PENDIENTE: AMBAR,
   EN_PROCESO: AZUL,
-  COMPLETADA: ESMERALDA,
+  COMPLETADA: VERDE,
 }
 
-// nivel de la alerta: los mismos colores del grafico de niveles anterior
+// nivel de la alerta
 export const NIVELES = {
-  LEVE: ESMERALDA,
+  LEVE: VERDE,
   MODERADO: AMBAR,
-  ALTO: ROSADO,
-  CRITICO: MORADO,
+  ALTO: FUCSIA,
+  CRITICO: ROJO,
 }
 
-export const MARCA = '#ec4899'
+export const MARCA = FUCSIA
 export const TINTA = '#0b0b0b'
 export const TINTA_SUAVE = '#52514e'
 export const LINEA = '#e1e0d9'
-
-// un color distinto para cada nombre de la lista, por orden alfabetico: no depende de cuantas
-// alertas tenga ni del orden en que llegue, asi no cambia al filtrar. devuelve { nombre: color }
-export function coloresPorNombre(nombres) {
-  const ordenados = nombres.slice().sort(function (a, b) {
-    return a.localeCompare(b, 'es')
-  })
-  const colores = {}
-  for (let i = 0; i < ordenados.length; i++) {
-    colores[ordenados[i]] = CATEGORICOS[i % CATEGORICOS.length]
-  }
-  return colores
-}
 
 export function porcentaje(valor, total) {
   if (!total) {

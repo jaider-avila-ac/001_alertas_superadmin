@@ -14,17 +14,16 @@ import Linea from '../../../components/graficos/Linea'
 import Dona from '../../../components/graficos/Dona'
 import TarjetaGrafico from '../../../components/graficos/TarjetaGrafico'
 import {
-  CIELO,
-  ESMERALDA,
+  AMBAR,
+  AZUL,
   ESTADOS,
-  INDIGO,
-  ROSADO,
-  coloresPorNombre,
+  FUCSIA,
+  VERDE,
   textoPorcentaje,
 } from '../../../components/graficos/configuracion'
 
 // color fijo por rol (no por puesto): no cambia con los filtros
-const COLOR_ROL = { ADMIN: CIELO, PSICORIENTADOR: ROSADO, DOCENTE: INDIGO, ESTUDIANTE: ESMERALDA }
+const COLOR_ROL = { ADMIN: AMBAR, PSICORIENTADOR: FUCSIA, DOCENTE: AZUL, ESTUDIANTE: VERDE }
 
 // alertas por cada 100 estudiantes activos, para comparar colegios de distinto tamanio
 function porCien(alertas, estudiantes) {
@@ -97,14 +96,10 @@ export default function EstadisticasPage() {
       roles.push({ ...rol, color: COLOR_ROL[rol.clave] })
     }
 
-    const nombresCategorias = []
-    for (const categoria of datos.porCategoria) {
-      nombresCategorias.push(categoria.clave)
-    }
-    const colorCategoria = coloresPorNombre(nombresCategorias)
+    // todas las categorias del mismo color: la barra y su nombre ya las distinguen
     const categorias = []
     for (const categoria of datos.porCategoria) {
-      categorias.push({ ...categoria, color: colorCategoria[categoria.clave] })
+      categorias.push({ ...categoria, color: FUCSIA })
     }
 
     // lo que se cobra son los segmentos
@@ -121,10 +116,10 @@ export default function EstadisticasPage() {
     cuerpo = (
       <>
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <Indicador titulo="Colegios activos" color={CIELO} icono={Building2} valor={r.institucionesActivas} detalle={r.institucionesInactivas + ' inhabilitados'} />
-          <Indicador titulo="Alertas" color={INDIGO} icono={BellRing} valor={r.alertas} />
-          <Indicador titulo="SMS enviados" color="#ec4899" icono={MessageSquare} valor={r.smsEnviados} detalle={fallidos + ' fallidos (' + r.smsFallidos + ')'} />
-          <Indicador titulo="Segmentos de SMS" color="#a855f7" icono={Receipt} valor={r.smsSegmentos} detalle="Lo que cobra el proveedor" />
+          <Indicador titulo="Colegios activos" color={AZUL} icono={Building2} valor={r.institucionesActivas} detalle={r.institucionesInactivas + ' inhabilitados'} />
+          <Indicador titulo="Alertas" color={FUCSIA} icono={BellRing} valor={r.alertas} />
+          <Indicador titulo="SMS enviados" color={VERDE} icono={MessageSquare} valor={r.smsEnviados} detalle={fallidos + ' fallidos (' + r.smsFallidos + ')'} />
+          <Indicador titulo="Segmentos de SMS" color={AMBAR} icono={Receipt} valor={r.smsSegmentos} detalle="Lo que cobra el proveedor" />
         </div>
 
         <div className="grid gap-4 lg:grid-cols-3">
@@ -144,7 +139,7 @@ export default function EstadisticasPage() {
             <BarrasHorizontales datos={categorias} />
           </TarjetaGrafico>
           <TarjetaGrafico titulo="Segmentos de SMS por mes" descripcion="Partes de 160 caracteres: lo que cobra el proveedor">
-            <Linea datos={segmentos} color={ROSADO} unidad="segmentos" vacio="Sin SMS con estos filtros" />
+            <Linea datos={segmentos} color={FUCSIA} unidad="segmentos" vacio="Sin SMS con estos filtros" />
           </TarjetaGrafico>
         </div>
       </>

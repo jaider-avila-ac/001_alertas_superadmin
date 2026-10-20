@@ -1,5 +1,5 @@
 import { Line } from 'react-chartjs-2'
-import { INDIGO, LINEA, TINTA, sumar, textoPorcentaje } from './configuracion'
+import { FUCSIA, LINEA, TINTA, sumar, textoPorcentaje } from './configuracion'
 
 // evolucion en el tiempo (meses): linea con el area suave debajo y el numero sobre cada punto
 export default function Linea({ datos, color, unidad, vacio }) {
@@ -16,7 +16,7 @@ export default function Linea({ datos, color, unidad, vacio }) {
     valores.push(dato.total)
   }
 
-  const trazo = color || INDIGO
+  const trazo = color || FUCSIA
   const nombre = unidad || 'alertas'
 
   const data = {

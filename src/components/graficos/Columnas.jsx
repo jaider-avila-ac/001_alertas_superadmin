@@ -1,5 +1,5 @@
 import { Bar } from 'react-chartjs-2'
-import { INDIGO, LINEA, TINTA, sumar, textoPorcentaje } from './configuracion'
+import { FUCSIA, LINEA, TINTA, sumar, textoPorcentaje } from './configuracion'
 
 // columnas sobre el eje x en orden (meses, niveles). encima de cada una el numero;
 // conPorcentaje: ademas su parte del total (niveles). datos: [{ clave, etiqueta, total, color? }]
@@ -16,7 +16,7 @@ export default function Columnas({ datos, conPorcentaje, vacio, unidad }) {
   for (const dato of datos) {
     etiquetas.push(dato.etiqueta)
     valores.push(dato.total)
-    colores.push(dato.color || INDIGO)
+    colores.push(dato.color || FUCSIA)
   }
 
   const nombre = unidad || 'alertas'
