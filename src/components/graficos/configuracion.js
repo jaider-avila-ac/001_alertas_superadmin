@@ -72,26 +72,11 @@ export function sumar(datos) {
   return total
 }
 
-// parte un nombre largo en lineas de hasta 16 letras (chart.js pinta cada linea del arreglo)
-export function partirEtiqueta(texto) {
-  const maximo = 16
+// corta un nombre largo con puntos suspensivos; el nombre completo sale en el recuadro al pasar el mouse
+export function acortarEtiqueta(texto) {
+  const maximo = 24
   if (!texto || texto.length <= maximo) {
     return texto
   }
-  const lineas = []
-  let actual = ''
-  for (const palabra of texto.split(' ')) {
-    if (actual === '') {
-      actual = palabra
-    } else if (actual.length + 1 + palabra.length <= maximo) {
-      actual = actual + ' ' + palabra
-    } else {
-      lineas.push(actual)
-      actual = palabra
-    }
-  }
-  if (actual !== '') {
-    lineas.push(actual)
-  }
-  return lineas
+  return texto.slice(0, maximo - 1).trimEnd() + '…'
 }

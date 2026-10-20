@@ -1,5 +1,5 @@
 import { Bar } from 'react-chartjs-2'
-import { LINEA, TINTA, partirEtiqueta, textoPorcentaje } from './configuracion'
+import { LINEA, TINTA, acortarEtiqueta, textoPorcentaje } from './configuracion'
 
 // una barra por fila partida en tramos (ej. por psicorientador: completadas y en curso).
 // dentro de cada tramo su porcentaje de la fila. filas: [{ etiqueta, valores: [n, n] }]
@@ -49,7 +49,7 @@ export default function BarrasApiladas({ filas, series, vacio }) {
         ticks: {
           color: TINTA,
           callback: function (valor) {
-            return partirEtiqueta(this.getLabelForValue(valor))
+            return acortarEtiqueta(this.getLabelForValue(valor))
           },
         },
       },
